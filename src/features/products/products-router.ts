@@ -3,8 +3,8 @@ import { getProductsByStoreController, createProductController, updateProductNam
 
 const router =Router();
 
-router.get('/stores/:storesId/products', getProductsByStoreController);
-router.post('/stores/:storesId/products', createProductController);
-router.patch('/stores/:storesId/products/:productId', updateProductNameController);
+router.get('/stores/:storeId/products', getProductsByStoreController);
+router.post('/stores/:storeId/products', createProductController);
+router.patch('/stores/:storeId/products/:productId', updateProductNameController);
 
 export default router;

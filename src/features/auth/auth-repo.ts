@@ -12,14 +12,14 @@ export const createUserRepository = async (user: CreateUserDTO): Promise<User> =
     return result.rows[0];
 };
 
-export const getUserByEmailRepository = async (email:string): Promise<UserWithPassword | undefined> =>{
+ export const getUserByEmailRepository = async (email:string): Promise<UserWithPassword | undefined> =>{
     const result = await pool.query<UserWithPassword>(
 'SELECT id, name, email, password, role FROM public.users WHERE email = $1', 
  [email],
  );
  return result.rows[0];
 }
-export const getUserByIdRepository = async (id: string): Promise<User | undefined> => {
+ export const getUserByIdRepository = async (id: string): Promise<User | undefined> => {
   const result = await pool.query<User>(
     'SELECT id, name, email, role FROM public.users WHERE id = $1',
     [id],

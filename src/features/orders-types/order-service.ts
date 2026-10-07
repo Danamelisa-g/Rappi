@@ -2,57 +2,57 @@ import Boom from "@hapi/boom";
 import { getUserByIdRepository } from "../auth/auth-repo";
 import { getStoreByIdRepository } from "../stores/stores-repo";
 import { getProductByIdRepository } from "../products/product-repo";
-import { createOrderItemRepository, createOrderRepository, getAvailableOrdersRepository, getOrderByIdRepository,getOrderItemsRepository,getOrdersByClientIdRepository,getOrdersByDeliveryIdRepository,getOrdersByStoreIdRepository,updateOrderRepository } from "./orders-repo";
-import { CreateOrderDTO, Order, OrderDetail } from "./orders-types";
+import { createOrderItemRepository, createOrderRepository, getAvailableOrdersRepository, getOrderByIdRepository,getOrderItemsRepository,getOrdersByClientIdRepository,getOrdersByDeliveryIdRepository,getOrdersByStoreIdRepository,takeOrderRepository,updateOrderRepository } from "./orders-repo";
+import { CreateOrderDTO, Order, OrderDetail } from "./order";
 
 // Revisa que el usuario exista y sea domiciliario
-const checkDeliveryUser = async (userId: string) => {
-  const user = await getUserByIdRepository(userId);
+  const checkDeliveryUser = async (userId: string) => {
+     const user = await getUserByIdRepository(userId);
 
-  if (!user) {
-    throw Boom.notFound('User not found');
+      if (!user) {
+     throw Boom.notFound('User not found');
   }
 
-  if (user.role !== 'delivery') {
-    throw Boom.forbidden('Only delivery users can do this');
+     if (user.role !== 'delivery') {
+      throw Boom.forbidden('Only delivery users can do this');
   }
 };
 
 // Trae una orden con sus productos
-export const getOrderDetailService = async (orderId: string): Promise<OrderDetail> => {
-  const order = await getOrderByIdRepository(orderId);
+    export const getOrderDetailService = async (orderId: string): Promise<OrderDetail> => {
+      const order = await getOrderByIdRepository(orderId);
 
-  if (!order) {
-    throw Boom.notFound('Order not found');
+        if (!order) {
+        throw Boom.notFound('Order not found');
   }
 
-  const items = await getOrderItemsRepository(orderId);
+     const items = await getOrderItemsRepository(orderId);
 
-  return { ...order, items };
+     return { ...order, items };
 };
 
 // Crea una orden
 export const createOrderService = async (data: CreateOrderDTO): Promise<OrderDetail> => {
   // 1. El usuario debe existir y ser consumer
-  const client = await getUserByIdRepository(data.clientId);
+     const client = await getUserByIdRepository(data.clientId);
 
-  if (!client) {
+    if (!client) {
     throw Boom.notFound('User not found');
   }
 
-  if (client.role !== 'consumer') {
+    if (client.role !== 'consumer') {
     throw Boom.forbidden('Only consumers can create orders');
   }
 
   // 2. La tienda debe existir y estar ABIERTA (validación pedida en el laboratorio)
-  const store = await getStoreByIdRepository(data.storeId);
+     const store = await getStoreByIdRepository(data.storeId);
 
-  if (!store) {
-    throw Boom.notFound('Store not found');
+     if (!store) {
+      throw Boom.notFound('Store not found');
   }
 
-  if (!store.is_open) {
-    throw Boom.badRequest('The store is closed');
+     if (!store.is_open) {
+     throw Boom.badRequest('The store is closed');
   }
 
   // 3. Todos los productos deben existir y ser de esa tienda
@@ -105,7 +105,7 @@ export const acceptOrderService = async (orderId: string, deliveryId: string): P
   }
 
   // Si ya tiene domiciliario o no está esperando, otro la tomó primero
-  if (order.status !== 'waiting_for_deliver' || (order as Order & { delivery_id: string | null }).delivery_id !== null) {
+  if (order.status !== 'waiting_for_deliver' || (order as Order & { orderdelivery_id: string | null }).delivery_id !== null) {
     throw Boom.conflict('This order was already taken by another delivery');
   }
 

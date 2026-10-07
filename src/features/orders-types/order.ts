@@ -1,7 +1,7 @@
 export interface Order {
     id: string;
     client_id: string;
-    delivery_address: string | null; // es null mientras ningún domiciliario la toma
+    delivery_id: string | null; // es null mientras ningún domiciliario la toma
     store_id: string;
     status: string;
     created_at: Date;

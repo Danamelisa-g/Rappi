@@ -2,14 +2,14 @@ import Boom from '@hapi/boom';
 import { Request, Response } from 'express';
 import {createProductService,getProductsByStoreIdService,updateProductNameService,} from './product-service';
 
-// GET /stores/:storeId/products
+
 export const getProductsByStoreController = async (req: Request, res: Response) => {
   const storeId = req.params.storeId;
   const products = await getProductsByStoreIdService(String(storeId));
   res.status(200).json(products);
 };
 
-// POST /stores/:storeId/products
+
 export const createProductController = async (req: Request, res: Response) => {
   const storeId = req.params.storeId;
   const { name, price } = req.body;
@@ -27,7 +27,7 @@ export const createProductController = async (req: Request, res: Response) => {
   res.status(201).json(product);
 };
 
-// PATCH /stores/:storeId/products/:productId
+
 export const updateProductNameController = async (req: Request, res: Response) => {
   const storeId = req.params.storeId;
   const productId = req.params.productId;

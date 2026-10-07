@@ -1,7 +1,7 @@
 import Boom from "@hapi/boom";
 import { Request, Response } from 'express';
 import { loginService, registerService } from "./auth-service";
-import { register } from "module";
+
 
 
 export const registerController = async (req:Request, res: Response) =>{

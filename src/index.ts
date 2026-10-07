@@ -6,11 +6,11 @@ import { initDb } from './db/db';
 import authRouter from './features/auth/auth-router';
 import storesRouter from './features/stores/stores-router';
 import productsRouter from './features/products/products-router';
-
+import ordersRouter from './features/orders-types/order-router'
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+app.use('/api', ordersRouter);
 const apiRouter = Router();
 app.use('/api', apiRouter);
 
@@ -20,7 +20,7 @@ apiRouter.get('/', (req, res) => {
 apiRouter.use('/', authRouter);
 apiRouter.use('/', storesRouter);
 apiRouter.use('/', productsRouter);
-apiRouter.use('/', authRouter);
+
 
 app.use(errorHandler);
 

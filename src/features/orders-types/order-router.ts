@@ -9,3 +9,5 @@ router.get('/orders/:orderId', getOrderByIdController);
 router.patch('/orders/:orderId/accept', acceptOrderController);
 router.patch('/orders/:orderId/release', releaseOrderController);
 router.patch('/orders/:orderId/deliver', deliverOrderController);
+
+export default router;

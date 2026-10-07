@@ -1,5 +1,5 @@
 import { pool } from '../../db/db';
-import { Order, OrderItem } from './orders-types';
+import { Order, OrderItem } from './order';
 
 // Crea la orden (el status nace en waiting_for_deliver por el DEFAULT de la tabla)
 // Devuelve solo el id de la orden nueva
@@ -84,4 +84,13 @@ export const updateOrderRepository = async (
     'UPDATE public.orders SET delivery_id = $2, status = $3 WHERE id = $1',
     [orderId, deliveryId, status],
   );
+};
+   export const takeOrderRepository = async (orderId:string, deliveryId:string): Promise<boolean> =>{
+  const result = await pool.query(
+    `UPDATE public.orders
+     SET delivery_id = $2, status = 'in_progress'
+     WHERE id = $1 AND status = 'waiting_for_deliver' AND delivery_id IS NULL`,
+    [orderId, deliveryId],
+  );
+  return result.rowCount === 1;
 };
