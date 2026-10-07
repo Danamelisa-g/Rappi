@@ -1,0 +1,7 @@
+{"timestamp":"00:00:00.732","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:02.075","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:00:03.919","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:04:37.049","source":"Browser","level":"ERROR","message":"⨯ unhandledRejection: AxiosError: Request failed with status code 500"}
+{"timestamp":"00:04:37.049","source":"Server","level":"ERROR","message":"[browser] \"\\u001b[31m⨯ unhandledRejection: AxiosError: Request failed with status code 500\\u001b[39m\""}
+{"timestamp":"00:04:37.409","source":"Browser","level":"ERROR","message":"⨯ unhandledRejection: AxiosError: Request failed with status code 500"}
+{"timestamp":"00:04:37.409","source":"Server","level":"ERROR","message":"[browser] \"\\u001b[31m⨯ unhandledRejection: AxiosError: Request failed with status code 500\\u001b[39m\""}
