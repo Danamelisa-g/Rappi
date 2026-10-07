@@ -4,6 +4,8 @@ import { PORT } from './config/config';
 import { errorHandler } from './middlewares/errorMiddleware';
 import { initDb } from './db/db';
 import authRouter from './features/auth/auth-router';
+import storesRouter from './features/stores/stores-router';
+import productsRouter from './features/products/products-router';
 
 const app = express();
 app.use(cors());
@@ -15,7 +17,9 @@ app.use('/api', apiRouter);
 apiRouter.get('/', (req, res) => {
   res.status(200).send('Hello, world!');
 });
-
+apiRouter.use('/', authRouter);
+apiRouter.use('/', storesRouter);
+apiRouter.use('/', productsRouter);
 apiRouter.use('/', authRouter);
 
 app.use(errorHandler);
