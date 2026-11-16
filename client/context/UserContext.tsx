@@ -17,9 +17,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Al abrir la página, buscamos si había un usuario guardado
+  // Al abrir la página, buscamos si había un usuario guardado.
+  // Usamos sessionStorage (y no localStorage) porque se guarda POR PESTAÑA:
+  // así puedes tener al cliente en una pestaña y a la tienda en otra sin que se mezclen.
   useEffect(() => {
-    const saved = localStorage.getItem('user');
+    const saved = sessionStorage.getItem('user');
     if (saved) {
       const savedUser = JSON.parse(saved);
       api.defaults.headers.common['x-user-id'] = savedUser.id;
@@ -30,14 +32,14 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = async (email: string, password: string) => {
     const res = await api.post('/auth/login', { email, password });
-    localStorage.setItem('user', JSON.stringify(res.data));
+    sessionStorage.setItem('user', JSON.stringify(res.data));
     api.defaults.headers.common['x-user-id'] = res.data.id;
     setUser(res.data);
     return res.data;
   };
 
   const logout = () => {
-    localStorage.removeItem('user');
+    sessionStorage.removeItem('user');
     delete api.defaults.headers.common['x-user-id'];
     setUser(null);
   };

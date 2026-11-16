@@ -1,7 +1,12 @@
-{"timestamp":"00:00:00.732","source":"Server","level":"LOG","message":""}
-{"timestamp":"00:00:02.075","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
-{"timestamp":"00:00:03.919","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
-{"timestamp":"00:04:37.049","source":"Browser","level":"ERROR","message":"⨯ unhandledRejection: AxiosError: Request failed with status code 500"}
-{"timestamp":"00:04:37.049","source":"Server","level":"ERROR","message":"[browser] \"\\u001b[31m⨯ unhandledRejection: AxiosError: Request failed with status code 500\\u001b[39m\""}
-{"timestamp":"00:04:37.409","source":"Browser","level":"ERROR","message":"⨯ unhandledRejection: AxiosError: Request failed with status code 500"}
-{"timestamp":"00:04:37.409","source":"Server","level":"ERROR","message":"[browser] \"\\u001b[31m⨯ unhandledRejection: AxiosError: Request failed with status code 500\\u001b[39m\""}
+{"timestamp":"00:00:01.039","source":"Server","level":"LOG","message":""}
+{"timestamp":"00:00:04.116","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"00:10:44.152","source":"Server","level":"LOG","message":"  Reload env: .env.local"}
+{"timestamp":"00:11:31.183","source":"Server","level":"LOG","message":"✓ Compiled in 8ms"}
+{"timestamp":"00:11:58.770","source":"Server","level":"LOG","message":"✓ Compiled in 17ms"}
+{"timestamp":"01:29:40.337","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"01:30:53.442","source":"Browser","level":"WARN","message":"Realtime send() is automatically falling back to REST API. This behavior will be deprecated in the future. Please use httpSend() explicitly for REST delivery."}
+{"timestamp":"01:30:53.479","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33mRealtime send() is automatically falling back to REST API. This behavior will be deprecated in the future. Please use httpSend() explicitly for REST delivery.\\u001b[39m\" \"\\u001b[2m(lib/supabase.ts:53:21)\\u001b[22m\""}
+{"timestamp":"01:30:53.479","source":"Browser","level":"WARN","message":"Realtime send() is automatically falling back to REST API. This behavior will be deprecated in the future. Please use httpSend() explicitly for REST delivery."}
+{"timestamp":"01:30:53.482","source":"Server","level":"WARN","message":"[browser] \"\\u001b[33mRealtime send() is automatically falling back to REST API. This behavior will be deprecated in the future. Please use httpSend() explicitly for REST delivery.\\u001b[39m\" \"\\u001b[2m(lib/supabase.ts:53:21)\\u001b[22m\""}
+{"timestamp":"01:31:10.165","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}
+{"timestamp":"01:32:35.188","source":"Browser","level":"INFO","message":"Download the React DevTools for a better development experience: https://react.dev/link/react-devtools"}

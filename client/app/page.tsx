@@ -15,6 +15,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     try {
       const user = await login(email, password);
 
@@ -28,15 +29,34 @@ export default function LoginPage() {
   };
 
   return (
-    <main>
-      <h1>Iniciar sesión</h1>
-      <form onSubmit={handleSubmit}>
-        <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <button type="submit">Entrar</button>
-      </form>
-      <p style={{ color: 'red' }}>{error}</p>
-      <Link href="/register">Crear cuenta</Link>
-    </main>
+    <div className="auth-page">
+      <div className="auth-card">
+        <span className="brand">rappi</span>
+        <p className="page-subtitle">Inicia sesión para continuar</p>
+
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="email">Email</label>
+          <input id="email" placeholder="tu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+
+          <label htmlFor="password">Contraseña</label>
+          <input
+            id="password"
+            type="password"
+            placeholder="••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <button type="submit" className="btn-block">
+            Entrar
+          </button>
+        </form>
+
+        {error && <p className="alert alert-error">{error}</p>}
+        <Link href="/register" className="auth-link">
+          ¿No tienes cuenta? Regístrate
+        </Link>
+      </div>
+    </div>
   );
 }

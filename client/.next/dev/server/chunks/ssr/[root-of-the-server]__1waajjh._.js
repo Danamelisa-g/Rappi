@@ -151,9 +151,11 @@ const UserContext = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project
 const UserProvider = ({ children })=>{
     const [user, setUser] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(true);
-    // Al abrir la página, buscamos si había un usuario guardado
+    // Al abrir la página, buscamos si había un usuario guardado.
+    // Usamos sessionStorage (y no localStorage) porque se guarda POR PESTAÑA:
+    // así puedes tener al cliente en una pestaña y a la tienda en otra sin que se mezclen.
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
-        const saved = localStorage.getItem('user');
+        const saved = sessionStorage.getItem('user');
         if (saved) {
             const savedUser = JSON.parse(saved);
             __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$axios$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["api"].defaults.headers.common['x-user-id'] = savedUser.id;
@@ -166,13 +168,13 @@ const UserProvider = ({ children })=>{
             email,
             password
         });
-        localStorage.setItem('user', JSON.stringify(res.data));
+        sessionStorage.setItem('user', JSON.stringify(res.data));
         __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$axios$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["api"].defaults.headers.common['x-user-id'] = res.data.id;
         setUser(res.data);
         return res.data;
     };
     const logout = ()=>{
-        localStorage.removeItem('user');
+        sessionStorage.removeItem('user');
         delete __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$axios$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["api"].defaults.headers.common['x-user-id'];
         setUser(null);
     };
@@ -186,7 +188,7 @@ const UserProvider = ({ children })=>{
         children: children
     }, void 0, false, {
         fileName: "[project]/context/UserContext.tsx",
-        lineNumber: 46,
+        lineNumber: 48,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };

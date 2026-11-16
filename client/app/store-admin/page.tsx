@@ -1,14 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useUser } from '@/context/UserContext';
 import { api, getErrorMessage } from '@/lib/axios';
-import { Order, Product, Store } from '@/lib/types';
+import { Order, OrderStatus, Product, Store } from '@/lib/types';
+import { listen, storeTopic } from '@/lib/supabase';
+import Header from '@/components/Header';
+import StatusBadge from '@/components/StatusBadge';
+
+const formatPrice = (value: number) => `$${value.toLocaleString('es-CO')}`;
 
 export default function StoreAdminPage() {
-  const { user, logout } = useUser();
-  const router = useRouter();
+  const { user, loading } = useUser();
   const [store, setStore] = useState<Store | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -19,17 +23,34 @@ export default function StoreAdminPage() {
   // Trae mi tienda, sus productos y sus órdenes
   const loadData = async () => {
     if (!user) return;
-    const storeRes = await api.get(`/stores/owner/${user.id}`);
-    setStore(storeRes.data);
-    const productsRes = await api.get(`/stores/${storeRes.data.id}/products`);
-    setProducts(productsRes.data);
-    const ordersRes = await api.get(`/orders?storeId=${storeRes.data.id}`);
-    setOrders(ordersRes.data);
+    try {
+      const storeRes = await api.get(`/stores/owner/${user.id}`);
+      setStore(storeRes.data);
+      const productsRes = await api.get(`/stores/${storeRes.data.id}/products`);
+      setProducts(productsRes.data);
+      const ordersRes = await api.get(`/orders?storeId=${storeRes.data.id}`);
+      setOrders(ordersRes.data);
+    } catch (err) {
+      setMessage(getErrorMessage(err));
+    }
   };
 
   useEffect(() => {
     loadData();
   }, [user]);
+
+  const storeId = store?.id;
+
+  // Tiempo real: cuando un pedido cambia de estado (Creado / En entrega / Entregado)
+  // se recargan las órdenes de la tienda sin refrescar la página
+  useEffect(() => {
+    if (!storeId) return;
+    return listen(storeTopic(storeId), async (event) => {
+      if (event !== 'status-change') return;
+      const ordersRes = await api.get(`/orders?storeId=${storeId}`);
+      setOrders(ordersRes.data);
+    });
+  }, [storeId]);
 
   // Abrir o cerrar la tienda
   const toggleStore = async () => {
@@ -61,42 +82,94 @@ export default function StoreAdminPage() {
     loadData();
   };
 
-  const handleLogout = () => {
-    logout();
-    router.push('/');
-  };
+  // Contador de pedidos por estado
+  const count = (status: OrderStatus) => orders.filter((o) => o.status === status).length;
 
-  if (!store) return <p>Cargando...</p>;
+  if (loading) return <p className="empty">Cargando...</p>;
+  if (!user) return <Link href="/" className="auth-link">Inicia sesión</Link>;
+
+  // Cada página es solo para su rol
+  if (user.role !== 'store') {
+    return (
+      <p className="empty">
+        Esta página es solo para tiendas. <Link href="/">Inicia sesión con otra cuenta</Link>
+      </p>
+    );
+  }
+  if (!store) return <p className="empty">{message || 'Cargando tienda...'}</p>;
 
   return (
-    <main>
-      <h1>{store.name}</h1>
-      <button onClick={handleLogout}>Salir</button>
+    <>
+      <Header role="Tienda" />
 
-      <p>Estado: {store.is_open ? 'Abierta' : 'Cerrada'}</p>
-      <button onClick={toggleStore}>{store.is_open ? 'Cerrar tienda' : 'Abrir tienda'}</button>
+      <div className="container">
+        <h1 className="page-title">🏪 {store.name}</h1>
+        <p className="page-subtitle">Administra tu tienda y revisa tus pedidos</p>
 
-      <h2>Nuevo producto</h2>
-      <form onSubmit={createProduct}>
-        <input placeholder="Nombre" value={name} onChange={(e) => setName(e.target.value)} />
-        <input placeholder="Precio" type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
-        <button type="submit">Crear</button>
-      </form>
-      <p style={{ color: 'red' }}>{message}</p>
+        {/* Información y estado de la tienda */}
+        <section className="section store-status">
+          <div>
+            <div className="row-sub">Estado de la tienda</div>
+            <div className="row-title">
+              <span className={`dot ${store.is_open ? 'dot-open' : 'dot-closed'}`} />
+              {store.is_open ? 'Abierta' : 'Cerrada'}
+            </div>
+          </div>
+          <button className={store.is_open ? 'btn-outline' : ''} onClick={toggleStore}>
+            {store.is_open ? 'Cerrar tienda' : 'Abrir tienda'}
+          </button>
+        </section>
 
-      <h2>Mis productos</h2>
-      {products.map((p) => (
-        <div key={p.id}>
-          {p.name} - ${p.price} <button onClick={() => renameProduct(p)}>Cambiar nombre</button>
+        <div className="two-columns">
+          {/* Productos */}
+          <section className="section">
+            <h2 className="section-title">➕ Nuevo producto</h2>
+            <form className="inline-form" onSubmit={createProduct}>
+              <input placeholder="Nombre" value={name} onChange={(e) => setName(e.target.value)} />
+              <input placeholder="Precio" type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
+              <button type="submit">Crear</button>
+            </form>
+            {message && <p className="alert alert-error">{message}</p>}
+
+            <h2 className="section-title" style={{ marginTop: 22 }}>🍔 Mis productos</h2>
+            <div className="list">
+              {products.length === 0 && <p className="empty">Aún no tienes productos</p>}
+              {products.map((p) => (
+                <div className="row" key={p.id}>
+                  <div>
+                    <div className="row-title">{p.name}</div>
+                    <div className="row-sub">{formatPrice(p.price)}</div>
+                  </div>
+                  <button className="btn-light" onClick={() => renameProduct(p)}>
+                    ✏️ Cambiar nombre
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Pedidos con su estado en tiempo real */}
+          <section className="section">
+            <h2 className="section-title">🧾 Pedidos</h2>
+            <p className="hint">
+              Creados: {count(OrderStatus.CREATED)} · En entrega: {count(OrderStatus.IN_DELIVERY)} · Entregados:{' '}
+              {count(OrderStatus.DELIVERED)}
+            </p>
+            <div className="list">
+              {orders.length === 0 && <p className="empty">Todavía no hay pedidos</p>}
+              {orders.map((order) => (
+                <div className="row" key={order.id}>
+                  <div>
+                    <div className="row-title">Pedido #{order.id.slice(0, 8)}</div>
+                    <div className="row-sub">{new Date(order.created_at).toLocaleString('es-CO')}</div>
+                  </div>
+                  <StatusBadge status={order.status} />
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
-      ))}
-
-      <h2>Órdenes de mi tienda</h2>
-      {orders.map((order) => (
-        <div key={order.id}>
-          Orden {order.id.slice(0, 8)} - {order.status}
-        </div>
-      ))}
-    </main>
+      </div>
+    </>
   );
 }
