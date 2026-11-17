@@ -10,8 +10,8 @@ import MapView from '@/components/MapView';
 import StatusBadge from '@/components/StatusBadge';
 import Header from '@/components/Header';
 
-const STEP = 0.00005; // ~5 metros aprox. por tecla
-const THROTTLE_MS = 1000; // máximo 1 llamada al API por segundo
+const STEP = 0.00005; 
+const THROTTLE_MS = 1000; 
 
 export default function DeliveryPage() {
   const { user, loading } = useUser();
@@ -20,26 +20,16 @@ export default function DeliveryPage() {
   const [detail, setDetail] = useState<OrderDetail | null>(null);
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
-
-  // Pedido que el repartidor está llevando y su posición en el mapa
   const [activeOrder, setActiveOrder] = useState<OrderDetail | null>(null);
   const [position, setPosition] = useState<LatLng | null>(null);
   const [distance, setDistance] = useState<number | null>(null);
-
-  // useRef para el throttle: guarda si ya hay una llamada programada
   const throttleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // useRef con la posición más reciente (evita el stale closure dentro del setTimeout)
   const pendingPosition = useRef<LatLng | null>(null);
   const activeOrderRef = useRef<OrderDetail | null>(null);
 
-  // Órdenes disponibles y mi historial
-  const loadData = async () => {
+const loadData = async () => {
     if (!user) return;
-    try {
-      const availableRes = await api.get('/orders/available');
-      setAvailable(availableRes.data);
-      const myRes = await api.get(`/orders?deliveryId=${user.id}`);
-      setMyOrders(myRes.data);
+    try {const availableRes = await api.get('/orders/available');setAvailable(availableRes.data);const myRes = await api.get(`/orders?deliveryId=${user.id}`);setMyOrders(myRes.data);
     } catch (err) {
       setError(getErrorMessage(err));
     }
@@ -49,7 +39,7 @@ export default function DeliveryPage() {
     loadData();
   }, [user]);
 
-  // Tiempo real: cuando se crea/toma/suelta un pedido, refrescar la lista de disponibles
+  
   useEffect(() => listen(ORDERS_TOPIC, () => loadData()), [user]);
 
   const startTracking = (order: OrderDetail) => {
@@ -60,7 +50,7 @@ export default function DeliveryPage() {
     setDistance(null);
   };
 
-  // Avisar a consumidor, tienda y demás repartidores que cambió el estado
+  
   const notifyStatus = (order: Order) => {
     const payload = { orderId: order.id, status: order.status, delivery_position: order.delivery_position };
     broadcast(orderTopic(order.id), 'status-change', payload);
@@ -120,7 +110,7 @@ export default function DeliveryPage() {
     loadData();
   };
 
-  // PATCH de la posición + broadcast. El backend revisa con ST_DWithin si ya llegó (< 5 m)
+ 
   const updatePosition = useCallback(
     async (next: LatLng) => {
       const order = activeOrderRef.current;
@@ -133,15 +123,15 @@ export default function DeliveryPage() {
           lng: next.lng,
         });
 
-        // Emitir la posición en tiempo real para que el consumidor vea el movimiento
+        
         broadcast(orderTopic(order.id), 'position-update', { lat: next.lat, lng: next.lng });
         setDistance(res.data.distanceMeters);
 
         if (res.data.arrived) {
-          // El sistema cambió el estado a "Entregado" automáticamente
+          
           activeOrderRef.current = res.data.order;
           setActiveOrder(res.data.order);
-          setInfo('🎉 ¡Llegaste al destino! El pedido quedó como "Entregado".');
+          setInfo(' ¡Llegaste al destino! El pedido quedó como "Entregado".');
           notifyStatus(res.data.order);
           loadData();
         }
@@ -154,43 +144,27 @@ export default function DeliveryPage() {
 
   const isMoving = activeOrder?.status === OrderStatus.IN_DELIVERY;
 
-  // Manejo de teclas con throttle de 1 segundo
   useEffect(() => {
     if (!isMoving) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       const current = pendingPosition.current;
       if (!current) return;
-
       let { lat, lng } = current;
-
-      switch (e.key) {
-        case 'ArrowUp':
-          lat += STEP;
-          break;
-        case 'ArrowDown':
-          lat -= STEP;
-          break;
-        case 'ArrowLeft':
-          lng -= STEP;
-          break;
-        case 'ArrowRight':
-          lng += STEP;
-          break;
+         switch (e.key) {case 'ArrowUp':lat += STEP;break;
+        case 'ArrowDown':lat -= STEP;break;
+        case 'ArrowLeft':lng -= STEP;break;
+        case 'ArrowRight':lng += STEP;break;
         default:
           return;
       }
 
-      e.preventDefault(); // que las flechas no hagan scroll en la página
+      e.preventDefault(); 
 
-      // 1. Mover el marcador en el mapa de inmediato
+      
       pendingPosition.current = { lat, lng };
       setPosition({ lat, lng });
-
-      // 2. Si ya hay un ciclo de 1 seg activo, no hacer nada más
       if (throttleRef.current) return;
-
-      // 3. Abrir un nuevo ciclo: esperar 1 seg y luego enviar la posición más reciente
       throttleRef.current = setTimeout(() => {
         throttleRef.current = null; // liberar para el siguiente ciclo
         if (pendingPosition.current) updatePosition(pendingPosition.current); // API call + broadcast
@@ -204,10 +178,7 @@ export default function DeliveryPage() {
         clearTimeout(throttleRef.current);
         throttleRef.current = null;
       }
-    };
-    // Ojo: NO depende de `position`. Si dependiera, el cleanup cancelaría el
-    // setTimeout pendiente en cada tecla y la posición nunca se enviaría.
-  }, [isMoving, updatePosition]);
+    };}, [isMoving, updatePosition]);
 
   const closeMap = () => {
     activeOrderRef.current = null;
@@ -219,7 +190,6 @@ export default function DeliveryPage() {
   if (loading) return <p className="empty">Cargando...</p>;
   if (!user) return <Link href="/" className="auth-link">Inicia sesión</Link>;
 
-  // Cada página es solo para su rol
   if (user.role !== 'delivery') {
     return (
       <p className="empty">
@@ -233,21 +203,20 @@ export default function DeliveryPage() {
       <Header role="Domiciliario" />
 
       <div className="container">
-        <h1 className="page-title">Hola, {user.name} 🛵</h1>
+        <h1 className="page-title">Hola, {user.name} </h1>
         <p className="page-subtitle">Acepta un pedido y llévalo hasta el cliente</p>
         {error && <p className="alert alert-error">{error}</p>}
 
-        {/* Pedido activo con el mapa */}
         {activeOrder && (
           <section className="section">
             <div className="store-status">
-              <h2 className="section-title">📦 Pedido de {activeOrder.store_name}</h2>
+              <h2 className="section-title">Pedido de {activeOrder.store_name}</h2>
               <StatusBadge status={activeOrder.status} />
             </div>
 
             {isMoving && (
               <p className="hint">
-                Usa las flechas <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> para llevar el 🛵 hasta el 📍. A
+                Usa las flechas <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> para llevar el domicilio hasta la ubicacion. A
                 menos de 5 metros el pedido se entrega automáticamente.
               </p>
             )}
@@ -284,9 +253,8 @@ export default function DeliveryPage() {
         )}
 
         <div className="two-columns">
-          {/* Órdenes disponibles */}
           <section className="section">
-            <h2 className="section-title">📋 Pedidos disponibles</h2>
+            <h2 className="section-title">Pedidos disponibles</h2>
             {available.length === 0 && <p className="empty">No hay pedidos disponibles</p>}
             <div className="list">
               {available.map((order) => (
@@ -321,10 +289,8 @@ export default function DeliveryPage() {
               </div>
             )}
           </section>
-
-          {/* Historial */}
           <section className="section">
-            <h2 className="section-title">🧾 Mis entregas</h2>
+            <h2 className="section-title"> Mis entregas</h2>
             {myOrders.length === 0 && <p className="empty">Aún no has tomado pedidos</p>}
             <div className="list">
               {myOrders.map((order) => (

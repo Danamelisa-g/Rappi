@@ -19,7 +19,7 @@ export default function LoginPage() {
     try {
       const user = await login(email, password);
 
-      // Redirección según el rol
+    
       if (user.role === 'consumer') router.push('/client');
       if (user.role === 'store') router.push('/store-admin');
       if (user.role === 'delivery') router.push('/delivery');
@@ -39,13 +39,7 @@ export default function LoginPage() {
           <input id="email" placeholder="tu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} />
 
           <label htmlFor="password">Contraseña</label>
-          <input
-            id="password"
-            type="password"
-            placeholder="••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <input id="password" type="password" placeholder="••••••"value={password} onChange={(e) => setPassword(e.target.value)}/>
 
           <button type="submit" className="btn-block">
             Entrar

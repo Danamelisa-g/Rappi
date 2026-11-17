@@ -1,18 +1,15 @@
-/* ===== Fuente ===== */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-/* ===== Colores (cámbialos aquí y cambia toda la app) ===== */
 :root {
-  --naranja: #ff441f;
-  --naranja-oscuro: #e3340f;
-  --naranja-claro: #fff1ec;
+  --naranja: #66ff1f;
+  --naranja-oscuro: #0fe38b;
+  --naranja-claro: #eafbc9;
   --fondo: #f5f5f7;
   --blanco: #ffffff;
   --texto: #1f1f24;
   --gris: #6b6b76;
   --borde: #ececf1;
   --verde: #12a150;
-  --rojo: #d92d20;
+  --rojo: #d94520;
   --sombra: 0 4px 18px rgba(20, 20, 40, 0.06);
 }
 
@@ -34,7 +31,6 @@ h3 {
   margin: 0;
 }
 
-/* ===== Barra superior (Header) ===== */
 .topbar {
   position: sticky;
   top: 0;
@@ -74,7 +70,6 @@ h3 {
   font-weight: 500;
 }
 
-/* ===== Contenido ===== */
 .container {
   max-width: 980px;
   margin: 0 auto;
@@ -213,7 +208,7 @@ select:focus {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: linear-gradient(135deg, #ff441f 0%, #ff7a45 100%);
+  background: linear-gradient(135deg, #66ff1f 0%, #0fe38b 100%);
 }
 
 .auth-card {
@@ -245,7 +240,7 @@ select:focus {
   text-decoration: none;
 }
 
-/* ===== Listas y tarjetas ===== */
+
 .list {
   display: flex;
   flex-direction: column;
@@ -330,7 +325,7 @@ select:focus {
   margin: 0;
 }
 
-/* ===== Mensajes ===== */
+
 .hint {
   font-size: 13px;
   color: var(--gris);
@@ -360,7 +355,6 @@ select:focus {
   color: var(--verde);
 }
 
-/* ===== Estado de la tienda ===== */
 .store-status {
   display: flex;
   align-items: center;
@@ -385,7 +379,6 @@ select:focus {
   background: var(--rojo);
 }
 
-/* ===== Badges de estado del pedido ===== */
 .badge {
   display: inline-block;
   padding: 4px 12px;
@@ -410,7 +403,6 @@ select:focus {
   color: var(--verde);
 }
 
-/* ===== Mapas ===== */
 .map-box {
   margin: 12px 0;
   border-radius: 16px;
@@ -423,7 +415,6 @@ select:focus {
   border: none;
 }
 
-/* Teclas del teclado */
 kbd {
   display: inline-block;
   min-width: 28px;
@@ -443,7 +434,6 @@ kbd {
   color: var(--naranja);
 }
 
-/* ===== Notificación (toast) ===== */
 .toast {
   position: fixed;
   top: 84px;
@@ -469,7 +459,6 @@ kbd {
   }
 }
 
-/* ===== Celular ===== */
 @media (max-width: 720px) {
   .two-columns {
     grid-template-columns: 1fr;

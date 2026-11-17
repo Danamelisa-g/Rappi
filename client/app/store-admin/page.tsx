@@ -20,7 +20,6 @@ export default function StoreAdminPage() {
   const [price, setPrice] = useState('');
   const [message, setMessage] = useState('');
 
-  // Trae mi tienda, sus productos y sus órdenes
   const loadData = async () => {
     if (!user) return;
     try {
@@ -41,8 +40,6 @@ export default function StoreAdminPage() {
 
   const storeId = store?.id;
 
-  // Tiempo real: cuando un pedido cambia de estado (Creado / En entrega / Entregado)
-  // se recargan las órdenes de la tienda sin refrescar la página
   useEffect(() => {
     if (!storeId) return;
     return listen(storeTopic(storeId), async (event) => {
@@ -52,7 +49,6 @@ export default function StoreAdminPage() {
     });
   }, [storeId]);
 
-  // Abrir o cerrar la tienda
   const toggleStore = async () => {
     if (!user || !store) return;
     const res = await api.patch(`/stores/${store.id}/toggle`, { userId: user.id });
@@ -63,17 +59,13 @@ export default function StoreAdminPage() {
     e.preventDefault();
     if (!store) return;
     try {
-      await api.post(`/stores/${store.id}/products`, { name, price: Number(price) });
-      setName('');
-      setPrice('');
-      setMessage('');
-      loadData();
+      await api.post(`/stores/${store.id}/products`, { name, price: Number(price) });setName('');setPrice('');setMessage('');loadData();
     } catch (err) {
       setMessage(getErrorMessage(err));
     }
   };
 
-  // prompt abre una ventanita para escribir el nuevo nombre
+
   const renameProduct = async (product: Product) => {
     if (!user || !store) return;
     const newName = prompt('Nuevo nombre', product.name);
@@ -82,13 +74,13 @@ export default function StoreAdminPage() {
     loadData();
   };
 
-  // Contador de pedidos por estado
+  
   const count = (status: OrderStatus) => orders.filter((o) => o.status === status).length;
 
   if (loading) return <p className="empty">Cargando...</p>;
   if (!user) return <Link href="/" className="auth-link">Inicia sesión</Link>;
 
-  // Cada página es solo para su rol
+ 
   if (user.role !== 'store') {
     return (
       <p className="empty">
@@ -103,10 +95,10 @@ export default function StoreAdminPage() {
       <Header role="Tienda" />
 
       <div className="container">
-        <h1 className="page-title">🏪 {store.name}</h1>
+        <h1 className="page-title"> {store.name}</h1>
         <p className="page-subtitle">Administra tu tienda y revisa tus pedidos</p>
 
-        {/* Información y estado de la tienda */}
+        
         <section className="section store-status">
           <div>
             <div className="row-sub">Estado de la tienda</div>
@@ -123,7 +115,7 @@ export default function StoreAdminPage() {
         <div className="two-columns">
           {/* Productos */}
           <section className="section">
-            <h2 className="section-title">➕ Nuevo producto</h2>
+            <h2 className="section-title">+ Nuevo producto</h2>
             <form className="inline-form" onSubmit={createProduct}>
               <input placeholder="Nombre" value={name} onChange={(e) => setName(e.target.value)} />
               <input placeholder="Precio" type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
@@ -131,7 +123,7 @@ export default function StoreAdminPage() {
             </form>
             {message && <p className="alert alert-error">{message}</p>}
 
-            <h2 className="section-title" style={{ marginTop: 22 }}>🍔 Mis productos</h2>
+            <h2 className="section-title" style={{ marginTop: 22 }}> Mis productos</h2>
             <div className="list">
               {products.length === 0 && <p className="empty">Aún no tienes productos</p>}
               {products.map((p) => (
@@ -148,9 +140,8 @@ export default function StoreAdminPage() {
             </div>
           </section>
 
-          {/* Pedidos con su estado en tiempo real */}
           <section className="section">
-            <h2 className="section-title">🧾 Pedidos</h2>
+            <h2 className="section-title"> Pedidos</h2>
             <p className="hint">
               Creados: {count(OrderStatus.CREATED)} · En entrega: {count(OrderStatus.IN_DELIVERY)} · Entregados:{' '}
               {count(OrderStatus.DELIVERED)}

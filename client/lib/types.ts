@@ -1,4 +1,4 @@
-// Mismo enum que el backend (server/src/features/orders-types/order.ts)
+
 export enum OrderStatus {
     CREATED = 'Creado',
     IN_DELIVERY = 'En entrega',
@@ -49,14 +49,12 @@ export interface OrderDetail extends Order {
     items: OrderItem[];
 }
 
-// Respuesta de PATCH /orders/:id/position
+
 export interface PositionUpdateResult {
     order: OrderDetail;
     arrived: boolean;
     distanceMeters: number;
 }
-
-// Payloads de Supabase Broadcast
 export interface StatusChangePayload {
     orderId: string;
     status: OrderStatus;

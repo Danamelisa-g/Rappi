@@ -14,9 +14,7 @@ export default function RegisterPage() {
   const [storeName, setStoreName] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {e.preventDefault();setError('');
     try {
       await api.post('/auth/register', { name, email, password, role, storeName });
       router.push('/');
@@ -49,12 +47,11 @@ export default function RegisterPage() {
 
           <label htmlFor="role">¿Qué tipo de cuenta?</label>
           <select id="role" value={role} onChange={(e) => setRole(e.target.value)}>
-            <option value="consumer">🛒 Cliente</option>
-            <option value="store">🏪 Tienda</option>
-            <option value="delivery">🛵 Domiciliario</option>
+            <option value="consumer"> Cliente</option>
+            <option value="store"> Tienda</option>
+            <option value="delivery">Domiciliario</option>
           </select>
 
-          {/* Si es tienda, pedimos el nombre de la tienda */}
           {role === 'store' && (
             <>
               <label htmlFor="storeName">Nombre de la tienda</label>

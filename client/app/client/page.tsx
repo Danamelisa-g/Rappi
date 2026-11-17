@@ -11,10 +11,9 @@ import MapView from '@/components/MapView';
 import StatusBadge from '@/components/StatusBadge';
 import Toast from '@/components/Toast';
 
-// Centro por defecto del mapa: Cali, Colombia
+
 const DEFAULT_CENTER: LatLng = { lat: 3.4516, lng: -76.532 };
 
-// 15000 -> "$15.000"
 const formatPrice = (value: number) => `$${value.toLocaleString('es-CO')}`;
 
 export default function ClientPage() {
@@ -29,14 +28,10 @@ export default function ClientPage() {
   const [error, setError] = useState('');
   const [toast, setToast] = useState('');
 
-  // Pantalla 1 y 3: tiendas abiertas y mis órdenes
+
   const loadData = async () => {
     if (!user) return;
-    try {
-      const storesRes = await api.get('/stores');
-      setStores(storesRes.data);
-      const ordersRes = await api.get(`/orders?clientId=${user.id}`);
-      setOrders(ordersRes.data);
+    try {const storesRes = await api.get('/stores');setStores(storesRes.data);const ordersRes = await api.get(`/orders?clientId=${user.id}`);setOrders(ordersRes.data);
     } catch (err) {
       setError(getErrorMessage(err));
     }
@@ -46,20 +41,14 @@ export default function ClientPage() {
     loadData();
   }, [user]);
 
-  // Tiempo real (Supabase Broadcast): escuchar el canal order:<id> de cada pedido no entregado
-  const activeIds = orders
-    .filter((o) => o.status !== OrderStatus.DELIVERED)
-    .map((o) => o.id)
-    .join(',');
+  const activeIds = orders.filter((o) => o.status !== OrderStatus.DELIVERED).map((o) => o.id).join(',');
 
   useEffect(() => {
     if (!activeIds) return;
 
     const unsubscribers = activeIds.split(',').map((orderId) =>
       listen(orderTopic(orderId), (event, payload) => {
-        if (event === 'position-update') {
-          // El repartidor se movió: actualizar su marcador en el mapa
-          const position = payload as LatLng;
+        if (event === 'position-update') {const position = payload as LatLng;
           setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, delivery_position: position } : o)));
         }
 
@@ -74,11 +63,11 @@ export default function ClientPage() {
           );
 
           if (change.status === OrderStatus.IN_DELIVERY) {
-            setToast('🛵 Un repartidor aceptó tu pedido. ¡Síguelo en el mapa!');
+            setToast(' Un repartidor aceptó tu pedido. ¡Síguelo en el mapa!');
           }
-          // Notificación visual de llegada (< 5 metros)
+          
           if (change.status === OrderStatus.DELIVERED) {
-            setToast('🎉 ¡Tu repartidor llegó! Tu pedido fue entregado.');
+            setToast(' ¡Tu repartidor llegó! Tu pedido fue entregado.');
           }
         }
       }),
@@ -102,7 +91,7 @@ export default function ClientPage() {
     }
   };
 
-  // Solo los productos con cantidad mayor a 0
+  
   const items = products
     .filter((p) => quantities[p.id] > 0)
     .map((p) => ({ productId: p.id, quantity: quantities[p.id] }));
@@ -125,23 +114,11 @@ export default function ClientPage() {
 
     try {
       const res = await api.post<Order>('/orders', {
-        clientId: user.id,
-        storeId: selectedStore.id,
-        items,
-        destination, // { lat, lng } elegido en el mapa
-      });
-      setToast('✅ ¡Pedido creado! Espera a que un repartidor lo acepte.');
-      setDestination(null);
-      setQuantities({});
-      setSelectedStore(null);
-
-      // Avisar en tiempo real a la tienda y a los repartidores
-      broadcast(storeTopic(res.data.store_id), 'status-change', { orderId: res.data.id, status: res.data.status });
-      broadcast(ORDERS_TOPIC, 'orders-changed', { orderId: res.data.id });
-
+        clientId: user.id,storeId: selectedStore.id,items,destination, });
+      setToast('¡Pedido creado! Espera a que un repartidor lo acepte.');setDestination(null);setQuantities({});setSelectedStore(null);broadcast(storeTopic(res.data.store_id), 'status-change', { orderId: res.data.id, status: res.data.status });broadcast(ORDERS_TOPIC, 'orders-changed', { orderId: res.data.id });
       loadData();
     } catch (err) {
-      // Si el backend dice que la tienda está cerrada, lo mostramos aquí
+      
       setMessage(getErrorMessage(err));
     }
   };
@@ -151,7 +128,7 @@ export default function ClientPage() {
   if (loading) return <p className="empty">Cargando...</p>;
   if (!user) return <Link href="/" className="auth-link">Inicia sesión</Link>;
 
-  // Cada página es solo para su rol
+
   if (user.role !== 'consumer') {
     return (
       <p className="empty">
@@ -166,18 +143,18 @@ export default function ClientPage() {
       {toast && <Toast message={toast} onClose={closeToast} />}
 
       <div className="container">
-        <h1 className="page-title">Hola, {user.name} 👋</h1>
+        <h1 className="page-title">Hola, {user.name} </h1>
         <p className="page-subtitle">¿Qué quieres pedir hoy?</p>
         {error && <p className="alert alert-error">{error}</p>}
 
-        {/* PANTALLA 1: tiendas abiertas */}
+      
         <section className="section">
-          <h2 className="section-title">🏪 Tiendas abiertas</h2>
+          <h2 className="section-title">Tiendas abiertas</h2>
           {stores.length === 0 && <p className="empty">No hay tiendas abiertas en este momento</p>}
           <div className="store-grid">
             {stores.map((store) => (
               <div className={`store-card ${selectedStore?.id === store.id ? 'selected' : ''}`} key={store.id}>
-                <span className="store-emoji">🏪</span>
+                
                 <span className="row-title">{store.name}</span>
                 <button onClick={() => selectStore(store.id)}>Ver productos</button>
               </div>
@@ -185,10 +162,10 @@ export default function ClientPage() {
           </div>
         </section>
 
-        {/* PANTALLA 2: productos de la tienda + punto de entrega */}
+      
         {selectedStore && (
           <section className="section">
-            <h2 className="section-title">🍔 Productos de {selectedStore.name}</h2>
+            <h2 className="section-title">Productos de {selectedStore.name}</h2>
             <div className="list">
               {products.length === 0 && <p className="empty">Esta tienda aún no tiene productos</p>}
               {products.map((p) => (
@@ -208,7 +185,7 @@ export default function ClientPage() {
               ))}
             </div>
 
-            <h2 className="section-title" style={{ marginTop: 22 }}>📍 Punto de entrega</h2>
+            <h2 className="section-title" style={{ marginTop: 22 }}>Punto de entrega</h2>
             <p className="hint">Haz click en el mapa para elegir dónde quieres recibir tu pedido.</p>
             <div className="map-box">
               <MapView
@@ -240,10 +217,8 @@ export default function ClientPage() {
             {message && <p className="alert alert-error">{message}</p>}
           </section>
         )}
-
-        {/* PANTALLA 3: mis órdenes + seguimiento en tiempo real */}
         <section className="section">
-          <h2 className="section-title">🧾 Mis pedidos</h2>
+          <h2 className="section-title"> Mis pedidos</h2>
           {orders.length === 0 && <p className="empty">Todavía no has hecho pedidos</p>}
           <div className="list">
             {orders.map((order) => (
@@ -259,7 +234,7 @@ export default function ClientPage() {
                 {/* Mapa en vivo cuando un repartidor aceptó el pedido */}
                 {order.status === OrderStatus.IN_DELIVERY && (
                   <>
-                    <p className="hint">🛵 Tu repartidor va en camino (se actualiza en vivo):</p>
+                    <p className="hint"> Tu repartidor va en camino (se actualiza en vivo):</p>
                     <div className="map-box">
                       <MapView
                         center={order.delivery_position ?? order.destination}
