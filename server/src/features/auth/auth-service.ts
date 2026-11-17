@@ -17,8 +17,6 @@ export const registerService = async (data: RegisterDTO):Promise<User> => {
         throw conflict('Email already registered');
         
     }
-   
-//Si el usuario es store, se crea su tienda automáticamente. Esto lo pide el enunciado.
 
     const user = await createUserRepository({
         name: data.name,

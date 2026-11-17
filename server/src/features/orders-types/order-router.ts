@@ -14,3 +14,4 @@ router.patch('/orders/:orderId/release', checkRole(['delivery']), releaseOrderCo
 router.patch('/orders/:orderId/position', checkRole(['delivery']), updatePositionController);
 
 export default router;
+//ruta de todo el proyecto 

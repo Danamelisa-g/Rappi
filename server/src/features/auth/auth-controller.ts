@@ -7,7 +7,7 @@ import { loginService, registerService } from "./auth-service";
 //datos del usuario revisa qye esten completos 
 export const registerController = async (req:Request, res: Response) =>{
     const { name,email,password,role,storeName } = req.body;
-//validacion de nombre a cualquiera de los comapos que se requieras
+
     if(!name){
         throw Boom.badRequest('Name is required');
     }

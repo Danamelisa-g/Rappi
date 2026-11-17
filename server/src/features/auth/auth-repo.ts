@@ -13,7 +13,7 @@ export const createUserRepository = async (user: CreateUserDTO): Promise<User> =
 
     return result.rows[0];
 };
-//se busca el ususario por su email sin no lohay unfiend
+
  export const getUserByEmailRepository = async (email:string): Promise<UserWithPassword | undefined> =>{
     const result = await pool.query<UserWithPassword>(
 'SELECT id, name, email, password, role FROM public.users WHERE email = $1', 
@@ -22,7 +22,7 @@ export const createUserRepository = async (user: CreateUserDTO): Promise<User> =
  return result.rows[0];
 }
 
-//devuelve al usuario sin password utilizado para revisar el rol de quien hace la peticion
+
  export const getUserByIdRepository = async (id: string): Promise<User | undefined> => {
   const result = await pool.query<User>(
     'SELECT id, name, email, role FROM public.users WHERE id = $1',
