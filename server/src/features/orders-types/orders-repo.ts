@@ -11,7 +11,7 @@ const ORDER_SELECT = `
 export const createOrderRepository = async (clientId: string, storeId: string, destination: LatLng): Promise<string> => {
   const result = await pool.query<{ id: string }>(
     `INSERT INTO public.orders (client_id, store_id, status, destination)
-     VALUES ($1, $2, 3,STSetSRID(STMakePoint(4, $5), 4326))
+     VALUES ($1, $2, $3, ST_SetSRID(ST_MakePoint($4, $5), 4326))
      RETURNING id`,
     [clientId, storeId, OrderStatus.CREATED, destination.lng, destination.lat],
   );
