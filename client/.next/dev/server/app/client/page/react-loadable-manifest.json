@@ -1,1 +1,9 @@
-{}
+{
+  "[project]/components/LeafletMap.tsx [app-client] (ecmascript, next/dynamic entry)": {
+    "id": "[project]/components/LeafletMap.tsx [app-client] (ecmascript, next/dynamic entry)",
+    "files": [
+      "static/chunks/node_modules_16xm28y._.js",
+      "static/chunks/components_LeafletMap_tsx_1zny_7m._.js"
+    ]
+  }
+}
